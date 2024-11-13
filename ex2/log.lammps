@@ -1,0 +1,132 @@
+LAMMPS (27 Jun 2024)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+
+###### declaração de variáveis
+variable t equal 1.0
+
+######## configurações da simulação
+units       lj
+dimension 3
+atom_style atomic
+neighbor 0.3 bin
+neigh_modify every 10 delay 10 check yes
+timestep 0.01
+
+######## Leitura da configuração inicial
+read_data out_0.5.data
+Reading data file ...
+  orthogonal box = (-5.3860867 -5.3860867 -16.15826) to (5.3860867 5.3860867 16.15826)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  1000 atoms
+  reading velocities ...
+  1000 velocities
+  read_data CPU = 0.140 seconds
+
+mass 1 1.0
+
+####### Definição do campo de forças
+pair_style  lj/cut 2.5
+pair_coeff 1 1 1.0 1.0
+
+
+####### Definir a dinâmica e termostato
+fix fxstandard all nve
+fix fxlange all langevin $t $t 1.0 265358
+fix fxlange all langevin 1 $t 1.0 265358
+fix fxlange all langevin 1 1 1.0 265358
+
+fix myrec all recenter INIT INIT INIT units box
+
+##### dados termodinâmicos
+thermo_style  custom step pe ke temp press density lx ly lz
+thermo        1000
+
+##### salvar trajetória
+dump img all custom 100 traj.lammpstrj id type x y z vx vy vz
+
+run 20000 ##### rodada
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282–-3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 10 steps, delay = 10 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 2.8
+  ghost atom cutoff = 2.8
+  binsize = 1.4, bins = 8 8 24
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 3.122 | 3.122 | 3.122 Mbytes
+   Step         PotEng         KinEng          Temp          Press         Density           Lx             Ly             Lz      
+         0  -5.4598269      0.75555386     0.50420678    -0.21200653     0.26666667     10.772173      10.772173      32.31652     
+      1000  -3.7535519      1.4278181      0.95283154     0.058887643    0.26666667     10.772173      10.772173      32.31652     
+      2000  -3.3933916      1.4742712      0.98383127     0.067398687    0.26666667     10.772173      10.772173      32.31652     
+      3000  -3.1718582      1.4773411      0.98587994     0.01785098     0.26666667     10.772173      10.772173      32.31652     
+      4000  -3.1332678      1.5375501      1.0260595      0.10906181     0.26666667     10.772173      10.772173      32.31652     
+      5000  -3.0444309      1.4715393      0.98200821     0.0086381403   0.26666667     10.772173      10.772173      32.31652     
+      6000  -2.9239997      1.4809498      0.98828816     0.07632269     0.26666667     10.772173      10.772173      32.31652     
+      7000  -2.9142829      1.4735508      0.98335058     0.077806168    0.26666667     10.772173      10.772173      32.31652     
+      8000  -2.9277815      1.4600436      0.97433673     0.029939957    0.26666667     10.772173      10.772173      32.31652     
+      9000  -3.03383        1.4925591      0.99603543     0.015011582    0.26666667     10.772173      10.772173      32.31652     
+     10000  -2.8842392      1.4790998      0.9870536      0.074723621    0.26666667     10.772173      10.772173      32.31652     
+     11000  -2.8662839      1.5598539      1.0409435      0.042116425    0.26666667     10.772173      10.772173      32.31652     
+     12000  -2.8387119      1.5623103      1.0425828      0.049834626    0.26666667     10.772173      10.772173      32.31652     
+     13000  -2.8595789      1.5308023      1.0215564      0.093949823    0.26666667     10.772173      10.772173      32.31652     
+     14000  -2.7703215      1.4653011      0.97784526     0.00067540115  0.26666667     10.772173      10.772173      32.31652     
+     15000  -2.7492343      1.5705129      1.0480567      0.16743214     0.26666667     10.772173      10.772173      32.31652     
+     16000  -2.6684135      1.496159       0.99843779     0.033633554    0.26666667     10.772173      10.772173      32.31652     
+     17000  -2.6808935      1.5620429      1.0424043      0.10975109     0.26666667     10.772173      10.772173      32.31652     
+     18000  -2.7233993      1.5356969      1.0248228      0.031909709    0.26666667     10.772173      10.772173      32.31652     
+     19000  -2.7173839      1.4867887      0.99218464     0.062820778    0.26666667     10.772173      10.772173      32.31652     
+     20000  -2.6966888      1.4718056      0.9821859      0.064121961    0.26666667     10.772173      10.772173      32.31652     
+Loop time of 5.50649 on 1 procs for 20000 steps with 1000 atoms
+
+Performance: 3138114.775 tau/day, 3632.077 timesteps/s, 3.632 Matom-step/s
+89.8% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 2.4077     | 2.4077     | 2.4077     |   0.0 | 43.73
+Neigh   | 1.4443     | 1.4443     | 1.4443     |   0.0 | 26.23
+Comm    | 0.10252    | 0.10252    | 0.10252    |   0.0 |  1.86
+Output  | 0.73574    | 0.73574    | 0.73574    |   0.0 | 13.36
+Modify  | 0.79443    | 0.79443    | 0.79443    |   0.0 | 14.43
+Other   |            | 0.02174    |            |       |  0.39
+
+Nlocal:           1000 ave        1000 max        1000 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           1422 ave        1422 max        1422 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          18236 ave       18236 max       18236 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 18236
+Ave neighs/atom = 18.236
+Neighbor list builds = 2000
+Dangerous builds = 2000
+
+Total wall time: 0:00:05

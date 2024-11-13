@@ -1,0 +1,59 @@
+######## declaração de variáveis 
+variable t index 0.5 
+variable told index 0.5 
+
+######## configurações da simulação 
+log  thermo_output_temp_$t
+units       lj
+dimension   3
+boundary    p p p
+atom_style  atomic 
+neighbor  0.5 bin
+neigh_modify  every 10 delay 0
+timestep      0.01
+
+
+
+######## Leitura da configuração inicial 
+read_data out_${told}.data
+
+mass 1 1.0 
+
+####### Definição do campo de forças 
+pair_style  lj/cut 2.5 
+pair_coeff 1 1 1.0 1.0 
+
+####### Definir a dinâmica e termostato
+fix fxstandard all nve
+fix fxlange all langevin $t $t 1.0 265358
+
+fix myrec all recenter INIT INIT INIT units box 
+
+##### dados termodinâmicos 
+thermo_style  custom step pe ke temp press density lx ly lz
+thermo        1000
+
+run 10000 ##### equilibração 
+
+##### production stage 
+reset_timestep 0 
+
+##### salvar trajetória 
+dump img all custom 100 traj_T_$t.lammpstrj id type x y z vx vy vz 
+
+#### computa pressão e perfil de densidade 
+compute mypress all pressure thermo_temp 
+compute mychunk all chunk/atom bin/1d z center 0.5 units box 
+
+variable px equal c_mypress[1]
+variable py equal c_mypress[2]
+variable pz equal c_mypress[3]
+
+
+fix print_rg_press all ave/time 100 1 100  v_px v_py v_pz file Rg_pressures_Temp_$t.dat
+fix print_densityprof all ave/chunk 100 1 100 mychunk density/mass ave running overwrite file rho_prof_Temp_$t.dat
+
+run 10000 #### rodada de produção de resultados 
+
+write_data out_$t.data nocoeff 
+

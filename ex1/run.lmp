@@ -1,0 +1,52 @@
+###### declaração de variáveis 
+variable rho equal 0.8
+variable npart equal 1000 
+variable Lbox equal (${npart}/${rho})^(1./3.)
+variable Lbox2 equal ${Lbox}*0.5 
+
+######## configurações da simulação 
+units lj 
+dimension 3 
+atom_style atomic 
+neighbor 0.3 bin
+neigh_modify every 10 delay 10 check yes 
+timestep 0.01
+
+######## Definição da caixa de simulação 
+
+region box block -${Lbox2} ${Lbox2} -${Lbox2} ${Lbox2} -${Lbox2} ${Lbox2}
+create_box 1 box 
+create_atoms 1 random ${npart} 57679 box
+
+mass 1 1.0 
+
+####### Definição do campo de forças 
+
+pair_style lj/cut 2.5 
+pair_coeff 1 1 1.0 1.0 
+
+####### Minimização para retirar possíveis overlaps 
+min_style cg
+minimize 0.0 1.0e-8 1000 100000
+
+####### Definir a dinâmica e termostato 
+
+fix mydyn all nve 
+fix mylang all langevin 1.0 1.0 1.0 71724 
+
+##### dados termodinâmicos 
+thermo_style custom step temp ke pe etotal press density
+thermo 1000
+
+run 10000 #### equilibração
+
+compute enpot all pe #### calcular a energia potencial 
+compute enkin all ke #### calcular a energia cinética
+
+dump mydump all custom 100 traj.lammpstrj id type x y z vx vy vz 
+#### salvar a energia cinética e potencial em um arquivo thermo_output.dat
+fix mythermo all ave/time 100 1 100 c_enkin c_enpot  file thermo_output.dat 
+
+
+run 10000 #### produção de resultados 
+

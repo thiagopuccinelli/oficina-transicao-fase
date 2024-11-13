@@ -1,0 +1,43 @@
+######## configurações da simulação  
+units       lj
+dimension   3
+boundary    p p p
+atom_style  atomic 
+neighbor  0.5 bin
+neigh_modify  every 10 delay 0
+timestep      0.001
+
+######## Definição da caixa de simulação 
+region box block -5.386086725079709 5.386086725079709 -5.386086725079709 5.386086725079709 -5.386086725079709 5.386086725079709
+create_box 1 box  
+create_atoms 1 random 1000 30349 box 
+mass * 1.0 
+
+####### Definição do campo de forças 
+
+pair_style  lj/cut 2.5 
+pair_coeff 1 1 1.0 1.0 
+
+
+####### Minimização para retirar possíveis overlaps 
+min_style cg
+minimize 0.0 0.0 1000 10000
+
+
+####### Definir a dinâmica e termostato 
+
+fix mydyn all nve 
+fix mylang all langevin 0.5 0.5 1.0 71724 
+
+##### dados termodinâmicos 
+thermo_style  custom step pe ke temp press density lx ly lz
+thermo        1000
+
+run           10000 ##### equilibração
+
+####### aumento da caixa no eixo-z em 6 vezes Lz 
+group none empty
+change_box none z final -16.15826017523913 16.15826017523913  
+
+##### escrever o arquivo de configuração 
+write_data out_0.5.data nocoeff 
